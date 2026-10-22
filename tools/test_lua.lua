@@ -36,4 +36,32 @@ check("model", IDPeek.BuildEntries("model", { 1381346 })[1].view, "scene")
 check("texture", IDPeek.BuildEntries("texture", { 136207 })[1].view, "texture")
 check("empty", IDPeek.BuildEntries("kit", {}), {})
 
+-- BuildEntries, lookup kinds (WoW globals stubbed)
+local printed, loadResult = {}, { true }
+print_real, print = print, function(s) printed[#printed + 1] = s end
+function IsAddOnLoaded() return IDPeek_Data ~= nil end
+function LoadAddOn(name)
+    assert(name == "IDPeek_Data")
+    if loadResult[1] then
+        IDPeek_Data = { spell = { [205128] = { { 53761, 65054 } }, [1] = { { 10, 20, 21 }, { 11, 30 } } },
+                        worldeffect = { [735] = { 200316, 19 } } }
+    end
+    return unpack(loadResult)
+end
+
+loadResult = { nil, "DISABLED" }
+check("data missing", IDPeek.BuildEntries("spell", { 205128 }), {})
+check("data missing message", printed, { "IDPeek: IDPeek_Data not loaded (DISABLED)" })
+
+loadResult = { true }
+check("spell", IDPeek.BuildEntries("spell", { 205128 }),
+    { { view = "model", kind = "kit", id = 65054, chain = "spell 205128 -> visual 53761 -> kit 65054" } })
+local e = IDPeek.BuildEntries("spell", { 1 })
+check("spell flattens", { #e, e[3].id, e[3].chain }, { 3, 30, "spell 1 -> visual 11 -> kit 30" })
+check("worldeffect", IDPeek.BuildEntries("worldeffect", { 735 }),
+    { { view = "scene", kind = "model", id = 200316, chain = "worldeffect 735 -> model 200316" } })
+check("not in table", IDPeek.BuildEntries("spell", { 999999 }),
+    { { kind = "spell", id = 999999, chain = "spell 999999 not in table" } })
+print = print_real
+
 print("OK")
