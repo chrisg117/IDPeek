@@ -1,0 +1,8 @@
+## Interface: 70300
+## Title: IDPeek
+## Notes: Preview candidate kit, spell, display, model, texture and WorldEffect ids. /idp
+## SavedVariables: IDPeekDB
+Parse.lua
+Entries.lua
+Preview.lua
+Panel.lua
