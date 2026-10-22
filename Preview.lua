@@ -84,9 +84,8 @@ function Preview:Init(parent)
     scene:SetAllPoints()
     actor = scene:CreateActor()
     actor:SetPosition(0, 0, 0)
-    if actor:HasScript("OnModelLoaded") then
-        actor:SetScript("OnModelLoaded", fitCamera)
-    end
+    -- Actors are not frames; if this client's actor has no OnModelLoaded, fitCamera's fallback is used.
+    pcall(actor.SetScript, actor, "OnModelLoaded", fitCamera)
     makeInteractive(scene,
         function(d) actor:SetYaw((actor:GetYaw() or 0) + d) end,
         function(f)

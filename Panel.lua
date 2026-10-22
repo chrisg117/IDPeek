@@ -140,6 +140,10 @@ frame:SetScript("OnKeyDown", function(self, key)
         IDPeek.Go(key == "LEFT" and -1 or 1)
     end
 end)
+-- Let key-ups through again, so a movement key held across a flip is not left running.
+frame:SetScript("OnKeyUp", function(self)
+    self:SetPropagateKeyboardInput(true)
+end)
 
 frame:SetScript("OnDragStart", frame.StartMoving)
 frame:SetScript("OnDragStop", function(self)
