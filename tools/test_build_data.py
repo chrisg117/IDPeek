@@ -21,6 +21,7 @@ build_data.write_lua(sp, we, out)
 text = open(os.path.join(out, "Data.lua")).read()
 assert "[735]={200316,19}" in text
 assert "s[205128]={{53761,65054}}" in text
+assert "end)()\n(" not in text    # Lua 5.1: "ambiguous syntax (function call x new statement)"
 toc = open(os.path.join(out, "IDPeek_Data.toc")).read()
 assert "## LoadOnDemand: 1" in toc and "Data.lua" in toc
 print("OK")

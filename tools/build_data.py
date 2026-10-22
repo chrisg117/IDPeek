@@ -56,7 +56,7 @@ def write_lua(spells, worldeffects, out):
         for start in range(0, len(items), ROWS_PER_BLOCK):
             lines.append("(function() local s=IDPeek_Data.%s" % name)
             lines.extend(row(k, v) for k, v in items[start:start + ROWS_PER_BLOCK])
-            lines.append("end)()")
+            lines.append("end)();")   # the ';' stops Lua 5.1 reading the next '(' as a call
 
     blocks("spell", spells.items(),
            lambda k, v: "s[%d]={%s}" % (k, ",".join("{%s}" % ",".join(map(str, r)) for r in v)))
