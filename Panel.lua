@@ -43,6 +43,7 @@ local preview = CreateFrame("Frame", nil, frame)
 preview:SetSize(380, 300)
 preview:SetPoint("TOP", 0, -66)
 frame.preview = preview
+IDPeek.Preview:Init(preview)
 
 local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 label:SetPoint("TOP", preview, "BOTTOM", 0, -8)
@@ -59,6 +60,27 @@ nextButton:SetSize(80, 22)
 nextButton:SetPoint("TOPRIGHT", preview, "BOTTOMRIGHT", 0, -40)
 nextButton:SetText("Next")
 frame.nextButton = nextButton
+
+local replay = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+replay:SetSize(80, 22)
+replay:SetPoint("TOP", preview, "BOTTOM", 0, -40)
+replay:SetText("Replay")
+replay:SetScript("OnClick", function() IDPeek.Preview:Replay() end)
+
+local standInBox = CreateFrame("EditBox", "IDPeekStandInBox", frame, "InputBoxTemplate")
+standInBox:SetSize(90, 20)
+standInBox:SetPoint("TOPRIGHT", nextButton, "BOTTOMRIGHT", 0, -8)
+standInBox:SetAutoFocus(false)
+standInBox:SetNumeric(true)
+standInBox:SetScript("OnEnterPressed", function(self)
+    self:ClearFocus()
+    IDPeek.Preview:SetStandIn(tonumber(self:GetText()))
+end)
+standInBox:SetScript("OnEscapePressed", standInBox.ClearFocus)
+
+local standInLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+standInLabel:SetPoint("RIGHT", standInBox, "LEFT", -10, 0)
+standInLabel:SetText("Kit stand-in display (empty = you):")
 
 function IDPeek.Go(delta)
     local n = #IDPeek.entries
@@ -112,7 +134,7 @@ nextButton:SetScript("OnClick", function() IDPeek.Go(1) end)
 frame:EnableKeyboard(true)
 frame:SetPropagateKeyboardInput(true)
 frame:SetScript("OnKeyDown", function(self, key)
-    local flip = (key == "LEFT" or key == "RIGHT") and not idBox:HasFocus()
+    local flip = (key == "LEFT" or key == "RIGHT") and not idBox:HasFocus() and not standInBox:HasFocus()
     self:SetPropagateKeyboardInput(not flip)
     if flip then
         IDPeek.Go(key == "LEFT" and -1 or 1)
